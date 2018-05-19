@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM openjdk:8
+FROM openjdk:8u171
 
-RUN cd /opt && curl -L https://github.com/JetBrains/kotlin-native/releases/download/v0.7/kotlin-native-linux-0.7.tar.gz | tar -xz
-RUN ln -sf /opt/kotlin-native-linux-0.7 /opt/kotlin-native
+ENV KOTLIN_NATIVE_VERSION 0.7
+
+RUN cd /opt && curl -L https://github.com/JetBrains/kotlin-native/releases/download/v${KOTLIN_NATIVE_VERSION}/kotlin-native-linux-${KOTLIN_NATIVE_VERSION}.tar.gz | tar -xz
+RUN ln -sf /opt/kotlin-native-linux-${KOTLIN_NATIVE_VERSION} /opt/kotlin-native
 RUN /opt/kotlin-native/bin/kotlinc-native --check_dependencies && rm -rf /root/.konan/cache
 
-ENTRYPOINT ["/opt/kotlin-native/bin/kotlinc-native"]
+ENV PATH $PATH:/opt/kotlin-native/bin
+
+ENTRYPOINT ["kotlinc"]
