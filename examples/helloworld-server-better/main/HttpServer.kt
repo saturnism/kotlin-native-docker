@@ -39,13 +39,7 @@ class HttpResponse(val req : CPointer<evhtp_request_t>?) {
 class HttpServer(val address : String, val port : Short, val backlog : Int) {
   val evbase = event_base_new()
   val htp = evhtp_new(evbase, null)
-  val events = mutableListOf<CPointer<event>>()
-
-  init {
-    handle(SIGINT, { stopGracefully() })
-    handle(SIGTERM, { stopGracefully() })
-    handle(SIGQUIT, { stopGracefully() })
-  }
+  val events = mutableListOf<CPointer<event>?>()
 
   fun handle(s : Int, signalHandler : SignalHandler) {
     val handlerRef = StableRef.create(signalHandler)
@@ -57,7 +51,8 @@ class HttpServer(val address : String, val port : Short, val backlog : Int) {
     }, handlerRef.asCPointer())
 
     event_add(event, null)
-    events.add(event!!)
+    events.add(event)
+    handlerRef.dispose()
   }
 
   fun handle(path : String, httpHandler : HttpHandler) {
@@ -80,6 +75,8 @@ class HttpServer(val address : String, val port : Short, val backlog : Int) {
       }
 
     }, handlerRef.asCPointer())
+
+    handlerRef.dispose()
   }
 
   fun start() {
@@ -102,6 +99,7 @@ class HttpServer(val address : String, val port : Short, val backlog : Int) {
       event_del(event)
       event_free(event)
     }
+    events.clear()
     evhtp_free(htp)
     event_base_free(evbase)
   }
