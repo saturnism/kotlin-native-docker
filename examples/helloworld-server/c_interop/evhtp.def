@@ -1,0 +1,6 @@
+package = evhtp
+headers = evhtp/evhtp.h
+headerFilter = evhtp/**
+compilerOpts.linux = -I /usr/include -I /usr/include/x86_64-linux-gnu -I /usr/include/evhtp
+linkerOpts.linux = -L /usr/lib -L/usr/lib/x86_64-linux-gnu -levhtp
+depends = posix event

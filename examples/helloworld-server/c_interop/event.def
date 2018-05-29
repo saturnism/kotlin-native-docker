@@ -1,0 +1,6 @@
+package = event
+headers = event.h
+headerFilter = event2/**
+compilerOpts.linux = -I /usr/include
+linkerOpts.linux = -L /usr/lib -L /usr/lib/x86_64-linux-gnu -levent
+depends = posix
