@@ -41,6 +41,12 @@ class HttpServer(val address : String, val port : Short, val backlog : Int) {
   val htp = evhtp_new(evbase, null)
   val events = mutableListOf<CPointer<event>>()
 
+  init {
+    handle(SIGINT, { stopGracefully() })
+    handle(SIGTERM, { stopGracefully() })
+    handle(SIGQUIT, { stopGracefully() })
+  }
+
   fun handle(s : Int, signalHandler : SignalHandler) {
     val handlerRef = StableRef.create(signalHandler)
 
